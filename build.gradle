@@ -1,0 +1,39 @@
+plugins {
+	id "me.champeau.jmh" version "0.7.3"
+    id 'java-library'
+    id 'idea'
+    id 'eclipse'
+}
+
+compileJava.options.encoding = "UTF-8"
+
+repositories {
+    mavenCentral()
+    maven {
+    	name = 'Maven Central Snapshots' 
+        url = 'https://central.sonatype.com/repository/maven-snapshots/' 
+    }
+}
+
+dependencies {
+	implementation "org.joml:joml:${JOML_VERSION}"
+	implementation "org.joml:joml2-fields:${JOML2_VERSION}"
+}
+
+jmh {
+	includes = [
+		'benchmark\\.*'
+//		'benchmark\\.joml\\.*'
+//		'benchmark\\.joml2_fields\\.*'
+	]
+	humanOutputFile = null
+    resultFormat = 'json'
+    
+    warmupIterations = 2
+    iterations = 5
+    timeOnIteration = '2s'
+    warmup = '3s'
+    fork = 1
+    operationsPerInvocation = 5
+    threads = 1
+}
