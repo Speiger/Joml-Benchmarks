@@ -42,9 +42,9 @@ public class MY_BENCHMARK {
 
 }
 ```    
-@BenchmarkMode defines what the target is. Which mode is used depends on the test, but AverageTime is a good default.
-@OutputTimeUnit defines which units are used. As the library is rather fast Nanoseconds are required. If the function is slower you can also provide Microseconds
-@State defines what scope variables are going to be used in. These are relevant for Setup functions.
+@BenchmarkMode defines what the target is. Which mode is used depends on the test, but AverageTime is a good default.    
+@OutputTimeUnit defines which units are used. As the library is rather fast Nanoseconds are required. If the function is slower you can also provide Microseconds    
+@State defines what scope variables are going to be used in. These are relevant for Setup functions.    
 
 ### Create new benchmark (Library)
 
