@@ -49,5 +49,5 @@ task generateMarkdownResults(type: JavaExec) {
 	description = 'Processes the Json Results into a markdown file'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'jomlbench.BenchmarkFormatter'
-    args = ['build/results/jmh/results.json', 'build/results/joml', 'build/results/jomlresult/Benchmark.md']
+    args = ['build/results/jmh/results.json', 'results/temp', 'results/output/Benchmark.md']
 }

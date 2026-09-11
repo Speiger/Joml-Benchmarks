@@ -19,7 +19,7 @@ import org.openjdk.jmh.infra.Blackhole;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
-public class MatrixBenchmarks {
+public class Matrix4fBenchmarks {
 	private static final float ROTATION = (float)Math.toRadians(32D);
 	private Float4x4 matrix;
 	

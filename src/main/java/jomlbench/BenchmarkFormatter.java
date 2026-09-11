@@ -14,7 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 import com.google.gson.JsonArray;
@@ -59,7 +61,10 @@ public class BenchmarkFormatter {
 			builder.append("- OS: ").append(info.getOperatingSystem().toString()).append("\n");
 			builder.append("- CPU: ").append(info.getHardware().getProcessor().getProcessorIdentifier().getName()).append("\n");
 			builder.append("- Java Version: ").append(System.getProperty("java.vm.vendor")).append(" - ").append(System.getProperty("java.runtime.name")).append(" - ").append(System.getProperty("java.vendor.version")).append("\n");
-			if(validation.isEmpty()) builder.append("- Consistent Data: Yes").append("\n");
+			if(validation.isEmpty()) {
+				builder.append("- Consistent Data: Yes").append("\n");
+				findMetadata(results).ifPresent(T -> builder.append(T.toPrettyText()));
+			}
 			else {
 				builder.append("- Consistent Data: No:\n");
 				validation.forEach(T -> builder.append("\t- ").append(T).append("\n"));
@@ -160,10 +165,11 @@ public class BenchmarkFormatter {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+		Map<String, JsonArray> existing = read(outputFolder);
 		System.out.println(String.format("Found %s Benchmarks", found));
 		for(Entry<String, List<JsonObject>> entry : objects.entrySet()) {
-			JsonArray array = new JsonArray();
-			entry.getValue().forEach(array::add);
+			JsonArray array = existing.computeIfAbsent(entry.getKey(), _ -> new JsonArray());
+			entry.getValue().forEach(T -> insert(array, T));
 			try(JsonWriter writer = new JsonWriter(Files.newBufferedWriter(outputFolder.resolve(entry.getKey()+".json")))) {
 				writer.setIndent("\t");
 				Streams.write(array, writer);
@@ -175,6 +181,37 @@ public class BenchmarkFormatter {
 		System.out.println("Saved Benchmarks");
 	}
 	
+	private static void insert(JsonArray array, JsonObject obj) {
+		for(int i = 0,m=array.size();i<m;i++) {
+			JsonObject element = array.get(i).getAsJsonObject();
+			if(Objects.equals(element.get("benchmark").getAsString(), obj.get("benchmark").getAsString())) {
+				array.set(i, obj);
+				return;
+			}
+		}
+		array.add(obj);
+	}
+	
+	private static Map<String, JsonArray> read(Path folder)  {
+		Map<String, JsonArray> result = new HashMap<>();
+		try {
+			for(Path path : Files.walk(folder).filter(Files::isRegularFile).toList()) {
+				String name = path.getFileName().toString();
+				name = name.substring(0, name.length()-5);
+				try(BufferedReader reader = Files.newBufferedReader(path)) {
+					result.put(name, JsonParser.parseReader(reader).getAsJsonArray());
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	private static List<String> generateHeader(List<Benchmark> list) {
 		return list.stream().flatMap(T -> T.scores().keySet().stream()).distinct().sorted(String.CASE_INSENSITIVE_ORDER).toList();
 	}
@@ -184,6 +221,10 @@ public class BenchmarkFormatter {
 		result.add("Function");
 		source.stream().map(BenchmarkFormatter::toPascalCase).forEach(T -> result.add(T+"<br>Score"));
 		return result;
+	}
+	
+	private static Optional<Metadata> findMetadata(Map<String, BenchmarkCollection> result) {
+		return result.values().stream().flatMap(T -> T.benchmarks().values().stream()).flatMap(T -> T.stream()).flatMap(T -> T.metadata().values().stream()).findFirst();
 	}
 	
 	private static String firstLetterUppercase(String string) {
@@ -254,8 +295,18 @@ public class BenchmarkFormatter {
 			this(obj.get("jmhVersion").getAsString(), obj.get("warmupIterations").getAsInt(), obj.get("warmupTime").getAsString(), obj.get("measurementIterations").getAsInt(), obj.get("measurementTime").getAsString());
 		}
 		
+		public String toPrettyText() {
+			StringJoiner joiner = new StringJoiner("\t- ", "\t- ", "\n");
+			joiner.add("jmh="+version()+"\n");
+			joiner.add("Warmup Iterations="+warmup()+"\n");
+			joiner.add("Warmup Time="+warupTime()+"\n");
+			joiner.add("Iteratations="+iterations()+"\n");
+			joiner.add("Iteration Time="+iterationTime());
+			return joiner.toString();
+		}
+		
 		public String toText() {
-			return "[jmh="+version()+", warmCount="+warmup()+", warmTime="+warupTime()+", count"+iterations()+", time="+iterationTime()+"]";
+			return "[jmh="+version()+", warmCount="+warmup()+", warmTime="+warupTime()+", count="+iterations()+", time="+iterationTime()+"]";
 		}
 	}
 }

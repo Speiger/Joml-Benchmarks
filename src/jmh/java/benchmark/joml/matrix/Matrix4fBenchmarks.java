@@ -12,12 +12,11 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.infra.Blackhole;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Thread)
-public class MatrixBenchmarks {
+public class Matrix4fBenchmarks {
 	private static final float ROTATION = (float)Math.toRadians(32D);
 	private Matrix4f matrix;
 	
@@ -37,8 +36,11 @@ public class MatrixBenchmarks {
 	}
 	
 	@Benchmark
-	public Vector4f testMatrixTransform(Blackhole hole) {
+	public Vector4f testMatrixTransform() {
 		return matrix.transform(new Vector4f(1, 3, 6, 1));
 	}
 	
+	public void testBoneAnimation() {
+		
+	}
 }
