@@ -3,12 +3,13 @@
 As JOML 2 is being developed it needs to be tracked how much the library is improving.    
 So this repository is intended to provide an easy way to implement benchmarks and to also maybe provide a hub where a lot of benchmarks can be tracked.   
 
-## TODOS
+## Latest Benchmarks    
 
-- Implement Benchmark Post Processor.    
-	As at the moment we only get JSON results and they are not really human readable.    
-	The goal is to provide a Markdown chart that gets automatically generated after a JMH run was done.    
+The benchmarks can be found in the Benchmarks directory.    
 
+## TODOs    
+
+More functions. Open for suggestions
 
 ## How to run benchmarks
 
@@ -25,11 +26,14 @@ gradle jmh --no-daemon
 Create a function with the following schema    
 ```
 @Benchmark
-public void testMY_FUNCTION(Blackhole hole) {
+public MY_RESULT_TYPE testMY_FUNCTION() {
 //	write your test in here.
 }
 ```       
-The blackhole is used to consume objects to ensure java doesn't erase the object and does instant executions.
+Return the type that is required as result for the return type.    
+If void return the mutated object.    
+All variables required should be class fields and init via a setup function and cloned in the call itself.   
+To avoid JVM optimization via deleting the code and just leaving the result.   
 
 ### Create new Benchmarks (Class)
 

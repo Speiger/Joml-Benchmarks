@@ -27,18 +27,18 @@ public class MatrixBenchmarks {
 	}
 	
 	@Benchmark
-	public void testCreation(Blackhole hole) {
-		hole.consume(new Matrix4f());
+	public Matrix4f testCreation() {
+		return new Matrix4f();
 	}
 	
 	@Benchmark
-	public void testStandardOperation(Blackhole hole) {
-		hole.consume(new Matrix4f().translate(32F, 0.5F, 1F).scale(0.25F, 2F, 1F).rotate(ROTATION, 0, 1F, 0));
+	public Matrix4f testStandardOperation() {
+		return new Matrix4f().translate(32F, 0.5F, 1F).scale(0.25F, 2F, 1F).rotate(ROTATION, 0, 1F, 0);
 	}
 	
 	@Benchmark
-	public void testMatrixTransform(Blackhole hole) {
-		hole.consume(matrix.transform(new Vector4f(1, 3, 6, 1)));
+	public Vector4f testMatrixTransform(Blackhole hole) {
+		return matrix.transform(new Vector4f(1, 3, 6, 1));
 	}
 	
 }

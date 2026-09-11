@@ -2,6 +2,7 @@ package benchmark.joml2_fields.matrix;
 
 import java.util.concurrent.TimeUnit;
 
+import org.joml2.Float3;
 import org.joml2.Float4x4;
 import org.joml2.internal.types.Float3Impl;
 import org.joml2.internal.types.Float4x4Impl;
@@ -28,21 +29,21 @@ public class MatrixBenchmarks {
 	}
 	
 	@Benchmark
-	public void testCreation(Blackhole hole) {
-		hole.consume(new Float4x4Impl());
+	public Float4x4 testCreation() {
+		return new Float4x4Impl();
 	}
 	
 	@Benchmark
-	public void testStandardOperation(Blackhole hole) {
-		hole.consume(new Float4x4Impl()
+	public Float4x4 testStandardOperation(Blackhole hole) {
+		return new Float4x4Impl()
 				.translate(32F, 0.5F, 1F)
 				.scale(0.25F, 2F, 1F)
-				.rotateAxis(ROTATION, 0, 1F, 0));
+				.rotateAxis(ROTATION, 0, 1F, 0);
 	}
 	
 	@Benchmark
-	public void testMatrixTransform(Blackhole hole) {
-		hole.consume(matrix.transformPosition(new Float3Impl().set(1, 3, 6)));
+	public Float3 testMatrixTransform(Blackhole hole) {
+		return matrix.transformPosition(new Float3Impl().set(1, 3, 6));
 	}
 	
 }

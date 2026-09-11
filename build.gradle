@@ -16,13 +16,15 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.google.code.gson:gson:2.14.0'
 	implementation "org.joml:joml:${JOML_VERSION}"
 	implementation "org.joml:joml2-fields:${JOML2_VERSION}"
+	implementation 'com.github.oshi:oshi-core:6.6.1'
 }
 
 jmh {
 	includes = [
-		'benchmark\\.*'
+//		'benchmark\\.*'
 //		'benchmark\\.joml\\.*'
 //		'benchmark\\.joml2_fields\\.*'
 	]
@@ -36,4 +38,16 @@ jmh {
     fork = 1
     operationsPerInvocation = 5
     threads = 1
+}
+
+tasks.named('jmh') {
+    finalizedBy('generateMarkdownResults')
+}
+
+task generateMarkdownResults(type: JavaExec) {
+	group = 'internal'
+	description = 'Processes the Json Results into a markdown file'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'jomlbench.BenchmarkFormatter'
+    args = ['build/results/jmh/results.json', 'build/results/joml', 'build/results/jomlresult/Benchmark.md']
 }
