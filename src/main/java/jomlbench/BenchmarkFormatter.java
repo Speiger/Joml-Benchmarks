@@ -117,7 +117,8 @@ public class BenchmarkFormatter {
 					String category = benchmarkInfo[2];
 					String clazz = benchmarkInfo[3];
 					String function = benchmarkInfo[benchmarkInfo.length-1].substring(4);
-					collections.computeIfAbsent(category, BenchmarkCollection::new).get(clazz, function).add(lib, new Score(obj.getAsJsonObject("primaryMetric")), new Metadata(obj));
+					double multiplier = obj.has("params") && obj.getAsJsonObject("params").has("operationMultiplier") ? obj.getAsJsonObject("params").get("operationMultiplier").getAsDouble() : 1D;
+					collections.computeIfAbsent(category, BenchmarkCollection::new).get(clazz, function).add(lib, new Score(obj.getAsJsonObject("primaryMetric"), multiplier), new Metadata(obj));
 				}
 			}
 			catch(Exception e) {
@@ -281,8 +282,8 @@ public class BenchmarkFormatter {
 	}
 	
 	public record Score(double score, double error, String unit) {
-		public Score(JsonObject obj) {
-			this(obj.get("score").getAsDouble(), obj.get("scoreError").getAsDouble(), obj.get("scoreUnit").getAsString());
+		public Score(JsonObject obj, double multiplier) {
+			this(obj.get("score").getAsDouble() / multiplier, obj.get("scoreError").getAsDouble() / multiplier, obj.get("scoreUnit").getAsString());
 		}
 		
 		public String toScore() {

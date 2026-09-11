@@ -24,7 +24,6 @@ dependencies {
 
 jmh {
 	includes = [
-		'benchmark.joml2_fields.matrix.Matrix4x3fBenchmarks'
 //		'benchmark\\.*'
 //		'benchmark\\.joml\\.*'
 //		'benchmark\\.joml2_fields\\.*'

@@ -11,8 +11,8 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -23,11 +23,9 @@ import org.openjdk.jmh.annotations.State;
 public class Matrix4x3fBenchmarks {
 	private static final float ROTATION = (float)Math.toRadians(32D);
 	private Float3x4 matrix;
-	private BoneAnimation animation;
 
 	@Setup(Level.Iteration)
 	public void setupMatrix() {
-		animation = new BoneAnimation(100, RandomGeneratorFactory.getDefault().create(32231212134522L));
 		matrix = new Float3x4Impl().translate(32F, 0.5F, 1F).scale(0.25F, 2F, 1F).rotateAxis(ROTATION, 0, 1F, 0);
 	}
 	
@@ -50,8 +48,21 @@ public class Matrix4x3fBenchmarks {
 	}
 	
 	@Benchmark
-	@OperationsPerInvocation(value = 100)
-	public Float3x4[] testBoneAnimation() {
-		return animation.process();
+	public Float3x4[] testBoneAnimation(AnimationContainer container) {
+		return container.animation.process();
+	}
+	
+	
+	@State(Scope.Benchmark)
+	public static class AnimationContainer {
+		private BoneAnimation animation;
+		
+		@Param("100")
+		public int operationMultiplier;
+		
+		@Setup(Level.Iteration)
+		public void setupContainer() {
+			animation = new BoneAnimation(operationMultiplier, RandomGeneratorFactory.getDefault().create(32231212134522L));
+		}
 	}
 }
