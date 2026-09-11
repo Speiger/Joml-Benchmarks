@@ -24,6 +24,7 @@ dependencies {
 
 jmh {
 	includes = [
+		'benchmark.joml2_fields.matrix.Matrix4x3fBenchmarks'
 //		'benchmark\\.*'
 //		'benchmark\\.joml\\.*'
 //		'benchmark\\.joml2_fields\\.*'
@@ -49,5 +50,5 @@ task generateMarkdownResults(type: JavaExec) {
 	description = 'Processes the Json Results into a markdown file'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'jomlbench.BenchmarkFormatter'
-    args = ['build/results/jmh/results.json', 'results/temp', 'results/output/Benchmark.md']
+    args = ['build/results/jmh/results.json', 'results/temp', 'results/output/Benchmark - Latest.md']
 }

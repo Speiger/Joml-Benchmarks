@@ -31,12 +31,12 @@
 
 ### Matrix4x3fBenchmarks
 
-|      Function       |        Joml<br>Score         |  Joml2<br>Fields<br>Score  |
-|---------------------|------------------------------|----------------------------|
-|      BoneAnimation  |    403,355 ns/op<br>34,717 Â±|    33,776 ns/op<br>0,202 Â±|
-|           Creation  |       0,492 ns/op<br>0,011 Â±|     0,499 ns/op<br>0,007 Â±|
-|    MatrixTransform  |       0,594 ns/op<br>0,032 Â±|     0,579 ns/op<br>0,024 Â±|
-|  StandardOperation  |       1,825 ns/op<br>0,018 Â±|     4,178 ns/op<br>0,194 Â±|
+|      Function       |        Joml<br>Score         |  Joml2<br>Fields<br>Score   |
+|---------------------|------------------------------|-----------------------------|
+|      BoneAnimation  |    403,355 ns/op<br>34,717 Â±|    367,731 ns/op<br>6,453 Â±|
+|           Creation  |       0,492 ns/op<br>0,011 Â±|      0,506 ns/op<br>0,008 Â±|
+|    MatrixTransform  |       0,594 ns/op<br>0,032 Â±|      0,569 ns/op<br>0,005 Â±|
+|  StandardOperation  |       1,825 ns/op<br>0,018 Â±|      4,125 ns/op<br>0,035 Â±|
 
 ## Vector
 

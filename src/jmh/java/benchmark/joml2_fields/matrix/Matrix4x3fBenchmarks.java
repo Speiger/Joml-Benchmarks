@@ -28,7 +28,7 @@ public class Matrix4x3fBenchmarks {
 
 	@Setup(Level.Iteration)
 	public void setupMatrix() {
-		animation = new BoneAnimation(10, RandomGeneratorFactory.getDefault().create(32231212134522L));
+		animation = new BoneAnimation(100, RandomGeneratorFactory.getDefault().create(32231212134522L));
 		matrix = new Float3x4Impl().translate(32F, 0.5F, 1F).scale(0.25F, 2F, 1F).rotateAxis(ROTATION, 0, 1F, 0);
 	}
 	
@@ -38,7 +38,7 @@ public class Matrix4x3fBenchmarks {
 	}
 	
 	@Benchmark
-	public Float3x4 testStandardOperation(Blackhole hole) {
+	public Float3x4 testStandardOperation() {
 		return new Float3x4Impl()
 				.translate(32F, 0.5F, 1F)
 				.scale(0.25F, 2F, 1F)
@@ -46,12 +46,12 @@ public class Matrix4x3fBenchmarks {
 	}
 	
 	@Benchmark
-	public Float3 testMatrixTransform(Blackhole hole) {
+	public Float3 testMatrixTransform() {
 		return matrix.transformPosition(new Float3Impl().set(1, 3, 6));
 	}
 	
 	@Benchmark
-	@OperationsPerInvocation(value = 10)
+	@OperationsPerInvocation(value = 100)
 	public Float3x4[] testBoneAnimation() {
 		return animation.process();
 	}
