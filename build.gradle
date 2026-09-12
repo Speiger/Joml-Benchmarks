@@ -1,5 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.relocation.SimpleRelocator
+
 plugins {
 	id "me.champeau.jmh" version "0.7.3"
+    id "com.gradleup.shadow" version "9.0.0"
     id 'java-library'
     id 'idea'
     id 'eclipse'
@@ -15,18 +19,44 @@ repositories {
     }
 }
 
+configurations {
+	jomlFields
+    jomlRecords
+}
+
+task shadowJomlFields(type: ShadowJar) {
+    group = 'shadow'
+    configurations = [project.configurations.jomlFields]
+    archiveClassifier = 'fields'
+    relocate(new SimpleRelocator('org.joml', 'fields.org.joml', null, null))
+}
+
+task shadowJomlRecords(type: ShadowJar) {
+    group = 'shadow'
+    configurations = [project.configurations.jomlRecords]
+    archiveClassifier = 'records'
+    relocate(new SimpleRelocator('org.joml', 'records.org.joml', null, null))
+}
+
 dependencies {
 	implementation 'com.google.code.gson:gson:2.14.0'
 	implementation "org.joml:joml:${JOML_VERSION}"
-	implementation "org.joml:joml2-fields:${JOML2_VERSION}"
 	implementation 'com.github.oshi:oshi-core:6.6.1'
+	
+	jomlFields "org.joml:joml2-fields:${JOML2_VERSION}"
+    implementation files(shadowJomlFields.archiveFile)
+	jmh files(shadowJomlFields.archiveFile)
+	
+	jomlRecords "org.joml:joml2-records:${JOML2_VERSION}"
+    implementation files(shadowJomlRecords.archiveFile)
+	jmh files(shadowJomlRecords.archiveFile)
 }
 
 jmh {
 	includes = [
 //		'benchmark\\.*'
 //		'benchmark\\.joml\\.*'
-//		'benchmark\\.joml2_fields\\.*'
+//		'benchmark.joml2_records.*'
 	]
 	humanOutputFile = null
     resultFormat = 'json'
@@ -42,6 +72,21 @@ jmh {
 
 tasks.named('jmh') {
     finalizedBy('generateMarkdownResults')
+}
+
+tasks.withType(JavaCompile).configureEach { task ->
+    task.dependsOn shadowJomlFields, shadowJomlRecords
+}
+
+tasks.matching { it.name.startsWith("jmh") }.configureEach { task ->
+    task.dependsOn shadowJomlFields, shadowJomlRecords
+}
+
+task setup {
+    group = 'internal'
+    description = 'Sets the Project full up and generates the dependencies as needed'
+    
+    dependsOn shadowJomlFields, shadowJomlRecords
 }
 
 task generateMarkdownResults(type: JavaExec) {

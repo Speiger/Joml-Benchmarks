@@ -3,12 +3,12 @@ package benchmark.joml2_fields.matrix;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 
-import org.joml2.Float3;
-import org.joml2.Float3x4;
-import org.joml2.FloatQuat;
-import org.joml2.internal.types.Float3Impl;
-import org.joml2.internal.types.Float3x4Impl;
-import org.joml2.internal.types.FloatQuatImpl;
+import fields.org.joml2.Float3;
+import fields.org.joml2.Float3x4;
+import fields.org.joml2.FloatQuat;
+import fields.org.joml2.internal.types.Float3Impl;
+import fields.org.joml2.internal.types.Float3x4Impl;
+import fields.org.joml2.internal.types.FloatQuatImpl;
 
 public class BoneAnimation {
 	int size;

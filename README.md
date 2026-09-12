@@ -19,6 +19,11 @@ and run the following command:
 gradle jmh --no-daemon
 ```
 
+## How to setup the project
+
+Simply clone the repo and import the gradle project.    
+To generate the shadow jars you run a "setup" or "build" or "jmh" then they will auto generate    
+
 ## How to implement new Benchmarks
 
 ### Extend existing benchmarks
