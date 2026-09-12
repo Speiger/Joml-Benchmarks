@@ -287,7 +287,7 @@ public class BenchmarkFormatter {
 		}
 		
 		public String toScore() {
-			return FORMAT.format(score())+" "+unit()+"<br>"+FORMAT.format(error())+" Â±";
+			return FORMAT.format(score())+" "+unit()+"<br>"+FORMAT.format(error())+" ±";
 		}
 	}
 	
