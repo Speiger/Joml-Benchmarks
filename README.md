@@ -13,7 +13,7 @@ More functions. Open for suggestions
 
 ## How to run benchmarks
 
-Pull the repo. Make sure you have jdk25 installed (other jvm versions aren't tested atm)    
+Pull the repo. Make sure you have jdk27 installed (other jvm versions aren't tested atm)    
 and run the following command:    
 ```
 gradle jmh --no-daemon
