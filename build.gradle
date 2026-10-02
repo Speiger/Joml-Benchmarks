@@ -13,11 +13,12 @@ compileJava.options.encoding = "UTF-8"
 
 // Pin the compiler, so the build does not quietly follow whatever JDK happens to be
 // on PATH. Note this does NOT cover the Gradle launcher itself: Gradle's Groovy build
-// script compiler rejects class file major version 72, so the daemon JVM must also be
-// 27 or older (set org.gradle.java.home, or run with JAVA_HOME pointing at a JDK 25).
+// script compiler rejects class file major version 71 (JDK 27) and newer, so the daemon
+// JVM must be 26 or older (set org.gradle.java.home, or run with JAVA_HOME pointing at a
+// JDK 25). The toolchain below is still used to compile and to run the JMH forks.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(27)
     }
 }
 
@@ -97,7 +98,15 @@ jmh {
     // JOML 1 reads joml.useMathFma (and then ANDs it with its own Math.fma probe),
     // JOML 2 reads joml.useFma. Setting only one silently leaves the other library
     // on the non-FMA path.
-    jvmArgsAppend = ['-Djoml.fastmath=true', '-Djoml.sinLookup=true', '-Djoml.useMathFma=true', '-Djoml.useFma=true']
+    //
+    // JOML 2 uses the Vector API (jdk.incubator.vector) for its SIMD code paths, but
+    // only when that incubator module is resolved at runtime. Without --add-modules it
+    // silently falls back to the scalar implementation, so it has to be added here.
+    // joml.vectorApi already defaults to true; it is set explicitly so the intent is
+    // visible. JOML 1 and lidiuma-math do not use the Vector API, so this does not
+    // change what they run.
+    jvmArgsAppend = ['-Djoml.fastmath=true', '-Djoml.sinLookup=true', '-Djoml.useMathFma=true', '-Djoml.useFma=true',
+                     '--add-modules=jdk.incubator.vector', '-Djoml.vectorApi=true']
     // Allocation per operation, reported next to the timings. Escape analysis
     // scalar-replaces the intermediates in several of these benchmarks, so the
     // B/op column is the only place the mutable-vs-immutable allocation
@@ -107,6 +116,13 @@ jmh {
     // performs exactly one operation per invocation; setting it to 5 silently
     // divided every published score by 5.
     threads = 1
+    // The forks run on the toolchain JDK by default. When several JDK 27 builds are
+    // installed (e.g. a GA build next to a Valhalla early-access build), Gradle may pick
+    // any of them, so the fork JVM can be pinned with -PjmhJvm=/path/to/bin/java (or
+    // jmhJvm=... in ~/.gradle/gradle.properties). JMH prints the one used as "# VM version".
+    if (project.hasProperty('jmhJvm')) {
+        jvm = project.property('jmhJvm')
+    }
 }
 
 tasks.named('jmh') {
